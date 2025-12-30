@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { TooltipInfo } from "@/components/common/tooltip-info"
 
 const toNumber = (value: string) => {
   if (!value) return 0
@@ -39,17 +40,39 @@ export function CostSection({ summary, detail }: CostSectionProps) {
     outputAudioTokens: 0,
   })
 
+  const outputRate = detail?.normalized.cost.output ?? summary.priceOutPerMTokens
+  const reasoningSupported =
+    detail?.normalized.cost.reasoning != null ||
+    (detail?.normalized.reasoning ?? summary.reasoning) === true
+  const inputAudioSupported =
+    summary.modalitiesIn.includes("audio") ||
+    detail?.normalized.cost.inputAudio != null
+  const outputAudioSupported =
+    summary.modalitiesOut.includes("audio") ||
+    detail?.normalized.cost.outputAudio != null
+  const cacheReadSupported = detail?.normalized.cost.cacheRead != null
+  const cacheWriteSupported = detail?.normalized.cost.cacheWrite != null
+
   const rates = {
     input: detail?.normalized.cost.input ?? summary.priceInPerMTokens,
-    output: detail?.normalized.cost.output ?? summary.priceOutPerMTokens,
-    reasoning: detail?.normalized.cost.reasoning ?? null,
+    output: outputRate,
+    reasoning: detail?.normalized.cost.reasoning ?? (reasoningSupported ? outputRate : null),
     cacheRead: detail?.normalized.cost.cacheRead ?? null,
     cacheWrite: detail?.normalized.cost.cacheWrite ?? null,
     inputAudio: detail?.normalized.cost.inputAudio ?? null,
     outputAudio: detail?.normalized.cost.outputAudio ?? null,
   }
 
-  const estimate = estimateCost(rates, inputs)
+  const effectiveInputs = {
+    ...inputs,
+    reasoningTokens: reasoningSupported ? inputs.reasoningTokens : 0,
+    cacheReadTokens: cacheReadSupported ? inputs.cacheReadTokens : 0,
+    cacheWriteTokens: cacheWriteSupported ? inputs.cacheWriteTokens : 0,
+    inputAudioTokens: inputAudioSupported ? inputs.inputAudioTokens : 0,
+    outputAudioTokens: outputAudioSupported ? inputs.outputAudioTokens : 0,
+  }
+
+  const estimate = estimateCost(rates, effectiveInputs)
   const hasAnyRate = Object.values(rates).some((value) => value !== null)
   const inputsClassName = showAdvanced
     ? "flex max-h-[320px] flex-col gap-3 overflow-y-auto pr-1 text-xs"
@@ -62,6 +85,31 @@ export function CostSection({ summary, detail }: CostSectionProps) {
           Pricing is not available for this model yet.
         </div>
       )}
+
+      <div className="flex items-center justify-between">
+        <div className="text-xs font-medium">Cost inputs</div>
+        <TooltipInfo
+          label="Cost input definitions"
+          variant="hover"
+          description={
+            <ul className="list-disc space-y-1 pl-4">
+              <li>Input tokens: tokens sent to the model per call.</li>
+              <li>
+                Output tokens: response tokens, excluding reasoning tokens.
+              </li>
+              <li>
+                Reasoning tokens: reasoning-only tokens; billed at output rate
+                unless a dedicated reasoning price exists.
+              </li>
+              <li>Calls per day/month: projections only.</li>
+              <li>Cache read/write: cached tokens in/out.</li>
+              <li>Audio in/out: audio tokens sent or generated.</li>
+              <li>Disabled fields mean the model does not support it.</li>
+              <li>All rates are USD per 1M tokens from models.dev.</li>
+            </ul>
+          }
+        />
+      </div>
 
       <div className={inputsClassName}>
         <div className="grid gap-1">
@@ -135,13 +183,14 @@ export function CostSection({ summary, detail }: CostSectionProps) {
 
         {showAdvanced && (
           <>
-            <div className="grid gap-1">
+            <div className={`grid gap-1${reasoningSupported ? "" : " opacity-60"}`}>
               <label htmlFor="reasoning-tokens">Reasoning tokens</label>
               <Input
                 id="reasoning-tokens"
                 type="number"
                 inputMode="numeric"
-                value={inputs.reasoningTokens}
+                value={reasoningSupported ? inputs.reasoningTokens : 0}
+                disabled={!reasoningSupported}
                 onChange={(event) =>
                   setInputs((prev) => ({
                     ...prev,
@@ -149,14 +198,20 @@ export function CostSection({ summary, detail }: CostSectionProps) {
                   }))
                 }
               />
+              {!reasoningSupported && (
+                <div className="text-muted-foreground text-[11px]">
+                  Model does not support this.
+                </div>
+              )}
             </div>
-            <div className="grid gap-1">
+            <div className={`grid gap-1${cacheReadSupported ? "" : " opacity-60"}`}>
               <label htmlFor="cache-read">Cache read tokens</label>
               <Input
                 id="cache-read"
                 type="number"
                 inputMode="numeric"
-                value={inputs.cacheReadTokens}
+                value={cacheReadSupported ? inputs.cacheReadTokens : 0}
+                disabled={!cacheReadSupported}
                 onChange={(event) =>
                   setInputs((prev) => ({
                     ...prev,
@@ -164,14 +219,20 @@ export function CostSection({ summary, detail }: CostSectionProps) {
                   }))
                 }
               />
+              {!cacheReadSupported && (
+                <div className="text-muted-foreground text-[11px]">
+                  Model does not support this.
+                </div>
+              )}
             </div>
-            <div className="grid gap-1">
+            <div className={`grid gap-1${cacheWriteSupported ? "" : " opacity-60"}`}>
               <label htmlFor="cache-write">Cache write tokens</label>
               <Input
                 id="cache-write"
                 type="number"
                 inputMode="numeric"
-                value={inputs.cacheWriteTokens}
+                value={cacheWriteSupported ? inputs.cacheWriteTokens : 0}
+                disabled={!cacheWriteSupported}
                 onChange={(event) =>
                   setInputs((prev) => ({
                     ...prev,
@@ -179,14 +240,20 @@ export function CostSection({ summary, detail }: CostSectionProps) {
                   }))
                 }
               />
+              {!cacheWriteSupported && (
+                <div className="text-muted-foreground text-[11px]">
+                  Model does not support this.
+                </div>
+              )}
             </div>
-            <div className="grid gap-1">
+            <div className={`grid gap-1${inputAudioSupported ? "" : " opacity-60"}`}>
               <label htmlFor="input-audio">Input audio tokens</label>
               <Input
                 id="input-audio"
                 type="number"
                 inputMode="numeric"
-                value={inputs.inputAudioTokens}
+                value={inputAudioSupported ? inputs.inputAudioTokens : 0}
+                disabled={!inputAudioSupported}
                 onChange={(event) =>
                   setInputs((prev) => ({
                     ...prev,
@@ -194,14 +261,20 @@ export function CostSection({ summary, detail }: CostSectionProps) {
                   }))
                 }
               />
+              {!inputAudioSupported && (
+                <div className="text-muted-foreground text-[11px]">
+                  Model does not support this.
+                </div>
+              )}
             </div>
-            <div className="grid gap-1">
+            <div className={`grid gap-1${outputAudioSupported ? "" : " opacity-60"}`}>
               <label htmlFor="output-audio">Output audio tokens</label>
               <Input
                 id="output-audio"
                 type="number"
                 inputMode="numeric"
-                value={inputs.outputAudioTokens}
+                value={outputAudioSupported ? inputs.outputAudioTokens : 0}
+                disabled={!outputAudioSupported}
                 onChange={(event) =>
                   setInputs((prev) => ({
                     ...prev,
@@ -209,6 +282,11 @@ export function CostSection({ summary, detail }: CostSectionProps) {
                   }))
                 }
               />
+              {!outputAudioSupported && (
+                <div className="text-muted-foreground text-[11px]">
+                  Model does not support this.
+                </div>
+              )}
             </div>
           </>
         )}

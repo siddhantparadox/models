@@ -8,7 +8,7 @@ import { InfoIcon } from "lucide-react"
 
 type TooltipInfoProps = {
   label: string
-  description: string
+  description: React.ReactNode
   variant?: "tooltip" | "hover"
 }
 
@@ -30,7 +30,7 @@ export function TooltipInfo({
         </HoverCardTrigger>
         <HoverCardContent className="text-xs/relaxed">
           <div className="font-medium">{label}</div>
-          <p className="text-muted-foreground mt-1">{description}</p>
+          <div className="text-muted-foreground mt-1">{description}</div>
         </HoverCardContent>
       </HoverCard>
     )
@@ -48,7 +48,7 @@ export function TooltipInfo({
       </TooltipTrigger>
       <TooltipContent className="text-xs/relaxed max-w-[220px]">
         <span className="font-medium">{label}</span>
-        <span className="text-muted-foreground mt-1 block">{description}</span>
+        <div className="text-muted-foreground mt-1">{description}</div>
       </TooltipContent>
     </Tooltip>
   )
