@@ -11,7 +11,9 @@ export type UrlState = {
   modalitiesOut: string[]
   toolCall: boolean
   structuredOutput: boolean
+  temperature: boolean
   openWeights: boolean
+  reasoning: boolean
   minContext: number | null
   minOutput: number | null
   maxPriceIn: number | null
@@ -58,7 +60,9 @@ export const parseUrlState = (params: URLSearchParams): UrlState => {
     modalitiesOut: parseList(params.get("modalitiesOut")),
     toolCall: parseBoolean(params.get("toolCall")),
     structuredOutput: parseBoolean(params.get("structuredOutput")),
+    temperature: parseBoolean(params.get("temperature")),
     openWeights: parseBoolean(params.get("openWeights")),
+    reasoning: parseBoolean(params.get("reasoning")),
     minContext: parseNumber(params.get("minContext")),
     minOutput: parseNumber(params.get("minOutput")),
     maxPriceIn: parseNumber(params.get("maxPriceIn")),
@@ -107,7 +111,9 @@ export const buildSearchParams = (
   setValue(next, "modalitiesOut", patch.modalitiesOut)
   setValue(next, "toolCall", patch.toolCall)
   setValue(next, "structuredOutput", patch.structuredOutput)
+  setValue(next, "temperature", patch.temperature)
   setValue(next, "openWeights", patch.openWeights)
+  setValue(next, "reasoning", patch.reasoning)
   setValue(next, "minContext", patch.minContext)
   setValue(next, "minOutput", patch.minOutput)
   setValue(next, "maxPriceIn", patch.maxPriceIn)

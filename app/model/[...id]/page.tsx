@@ -80,62 +80,78 @@ export default async function ModelPage({ params }: ModelPageProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Capabilities</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-xs">
-            <div>Tool calling: {formatBoolean(summary.toolCall)}</div>
-            <div>
-              Structured output: {formatBoolean(summary.structuredOutput)}
-            </div>
-            <div>Open weights: {formatBoolean(summary.openWeights)}</div>
-            <div>Reasoning: {formatBoolean(detail.normalized.reasoning)}</div>
-            <div>Attachments: {formatBoolean(detail.normalized.attachment)}</div>
-          </CardContent>
-        </Card>
+          <CardTitle>Capabilities</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2 text-xs">
+          <div>Tool calling: {formatBoolean(summary.toolCall)}</div>
+          <div>
+            Structured output: {formatBoolean(summary.structuredOutput)}
+          </div>
+          <div>
+            Temperature control: {formatBoolean(detail.normalized.temperature)}
+          </div>
+          <div>Open weights: {formatBoolean(summary.openWeights)}</div>
+          <div>Reasoning: {formatBoolean(detail.normalized.reasoning)}</div>
+          <div>Attachments: {formatBoolean(detail.normalized.attachment)}</div>
+        </CardContent>
+      </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Limits</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 text-xs sm:grid-cols-2">
-          <div>
-            <div className="text-muted-foreground">Context tokens</div>
-            <div>{formatNumber(summary.contextTokens)}</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">Output tokens</div>
-            <div>{formatNumber(summary.outputTokens)}</div>
-          </div>
-        </CardContent>
-      </Card>
+        <CardTitle>Limits</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 text-xs sm:grid-cols-2">
+        <div>
+          <div className="text-muted-foreground">Context tokens</div>
+          <div>{formatNumber(detail.normalized.limits.context)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Input tokens</div>
+          <div>{formatNumber(detail.normalized.limits.input)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Output tokens</div>
+          <div>{formatNumber(detail.normalized.limits.output)}</div>
+        </div>
+      </CardContent>
+    </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Pricing</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 text-xs sm:grid-cols-2">
-          <div>
-            <div className="text-muted-foreground">Input</div>
-            <div>{formatPrice(detail.normalized.cost.input)}</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">Output</div>
-            <div>{formatPrice(detail.normalized.cost.output)}</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">Reasoning</div>
-            <div>{formatPrice(detail.normalized.cost.reasoning)}</div>
-          </div>
-          <div>
-            <div className="text-muted-foreground">Cache read/write</div>
-            <div>
-              {formatPrice(detail.normalized.cost.cacheRead)} /{" "}
-              {formatPrice(detail.normalized.cost.cacheWrite)}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <CardTitle>Pricing</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4 text-xs sm:grid-cols-2">
+        <div>
+          <div className="text-muted-foreground">Input</div>
+          <div>{formatPrice(detail.normalized.cost.input)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Output</div>
+          <div>{formatPrice(detail.normalized.cost.output)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Reasoning</div>
+          <div>{formatPrice(detail.normalized.cost.reasoning)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Cache read</div>
+          <div>{formatPrice(detail.normalized.cost.cacheRead)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Cache write</div>
+          <div>{formatPrice(detail.normalized.cost.cacheWrite)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Input audio</div>
+          <div>{formatPrice(detail.normalized.cost.inputAudio)}</div>
+        </div>
+        <div>
+          <div className="text-muted-foreground">Output audio</div>
+          <div>{formatPrice(detail.normalized.cost.outputAudio)}</div>
+        </div>
+      </CardContent>
+    </Card>
 
       <Card>
         <CardHeader>

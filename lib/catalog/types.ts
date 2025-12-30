@@ -39,6 +39,7 @@ export type RawModel = {
   }
   limit?: {
     context?: number
+    input?: number
     output?: number
   }
   status?: string
@@ -66,7 +67,9 @@ export type ModelSummary = {
   outputTokens: number | null
   toolCall: boolean | null
   structuredOutput: boolean | null
+  temperature: boolean | null
   openWeights: boolean | null
+  reasoning: boolean | null
   status: string | null
   priceInPerMTokens: number | null
   priceOutPerMTokens: number | null
@@ -85,6 +88,7 @@ export type NormalizedModel = {
   reasoning: boolean | null
   toolCall: boolean | null
   structuredOutput: boolean | null
+  temperature: boolean | null
   openWeights: boolean | null
   status: string | null
   modalities: {
@@ -93,6 +97,7 @@ export type NormalizedModel = {
   }
   limits: {
     context: number | null
+    input: number | null
     output: number | null
   }
   cost: {

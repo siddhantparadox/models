@@ -83,6 +83,7 @@ const normalizeModel = (
     reasoning: toBoolean(model.reasoning),
     toolCall: toBoolean(model.tool_call),
     structuredOutput: toBoolean(model.structured_output),
+    temperature: toBoolean(model.temperature),
     openWeights: toBoolean(model.open_weights),
     status,
     modalities: {
@@ -91,6 +92,7 @@ const normalizeModel = (
     },
     limits: {
       context: toNumber(model.limit?.context),
+      input: toNumber(model.limit?.input),
       output: toNumber(model.limit?.output),
     },
     cost: {
@@ -162,7 +164,9 @@ export const normalizeCatalog = (raw: RawCatalog): CatalogIndex => {
         outputTokens: normalized.limits.output,
         toolCall: normalized.toolCall,
         structuredOutput: normalized.structuredOutput,
+        temperature: normalized.temperature,
         openWeights: normalized.openWeights,
+        reasoning: normalized.reasoning,
         status: normalized.status,
         priceInPerMTokens: normalized.cost.input,
         priceOutPerMTokens: normalized.cost.output,

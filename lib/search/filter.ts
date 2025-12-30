@@ -7,7 +7,9 @@ export type SearchFilters = {
   modalitiesOut: string[]
   toolCall: boolean
   structuredOutput: boolean
+  temperature: boolean
   openWeights: boolean
+  reasoning: boolean
   minContext: number | null
   minOutput: number | null
   maxPriceIn: number | null
@@ -68,7 +70,9 @@ export const filterSummaries = (
 
     if (filters.toolCall && summary.toolCall !== true) return false
     if (filters.structuredOutput && summary.structuredOutput !== true) return false
+    if (filters.temperature && summary.temperature !== true) return false
     if (filters.openWeights && summary.openWeights !== true) return false
+    if (filters.reasoning && summary.reasoning !== true) return false
 
     if (filters.minContext !== null) {
       if (summary.contextTokens === null) return false

@@ -112,7 +112,7 @@ export function FiltersPanel({
               <span>Capabilities</span>
               <TooltipInfo
                 label="Capabilities"
-                description="Filter models by tool calling, structured output, and open weights."
+                description="Filter models by tool calling, structured output, temperature control, open weights, and reasoning."
               />
             </div>
           </AccordionTrigger>
@@ -138,12 +138,30 @@ export function FiltersPanel({
               </label>
               <label className="flex items-center gap-2">
                 <Checkbox
+                  checked={state.temperature}
+                  onCheckedChange={(checked) =>
+                    update({ temperature: Boolean(checked) })
+                  }
+                />
+                <span>Temperature control</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <Checkbox
                   checked={state.openWeights}
                   onCheckedChange={(checked) =>
                     update({ openWeights: Boolean(checked) })
                   }
                 />
                 <span>Open weights</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={state.reasoning}
+                  onCheckedChange={(checked) =>
+                    update({ reasoning: Boolean(checked) })
+                  }
+                />
+                <span>Reasoning</span>
               </label>
             </div>
           </AccordionContent>
@@ -380,7 +398,9 @@ export function FiltersPanel({
               modalitiesOut: [],
               toolCall: false,
               structuredOutput: false,
+              temperature: false,
               openWeights: false,
+              reasoning: false,
               minContext: null,
               minOutput: null,
               maxPriceIn: null,
