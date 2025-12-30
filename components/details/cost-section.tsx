@@ -51,6 +51,9 @@ export function CostSection({ summary, detail }: CostSectionProps) {
 
   const estimate = estimateCost(rates, inputs)
   const hasAnyRate = Object.values(rates).some((value) => value !== null)
+  const inputsClassName = showAdvanced
+    ? "flex max-h-[320px] flex-col gap-3 overflow-y-auto pr-1 text-xs"
+    : "flex flex-col gap-3 text-xs"
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,7 +63,7 @@ export function CostSection({ summary, detail }: CostSectionProps) {
         </div>
       )}
 
-      <div className="grid gap-3 text-xs">
+      <div className={inputsClassName}>
         <div className="grid gap-1">
           <label htmlFor="input-tokens">Input tokens per call</label>
           <Input
@@ -121,96 +124,95 @@ export function CostSection({ summary, detail }: CostSectionProps) {
             }
           />
         </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowAdvanced((prev) => !prev)}
+        >
+          {showAdvanced ? "Hide" : "Show"} advanced inputs
+        </Button>
+
+        {showAdvanced && (
+          <>
+            <div className="grid gap-1">
+              <label htmlFor="reasoning-tokens">Reasoning tokens</label>
+              <Input
+                id="reasoning-tokens"
+                type="number"
+                inputMode="numeric"
+                value={inputs.reasoningTokens}
+                onChange={(event) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    reasoningTokens: toNumber(event.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="grid gap-1">
+              <label htmlFor="cache-read">Cache read tokens</label>
+              <Input
+                id="cache-read"
+                type="number"
+                inputMode="numeric"
+                value={inputs.cacheReadTokens}
+                onChange={(event) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    cacheReadTokens: toNumber(event.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="grid gap-1">
+              <label htmlFor="cache-write">Cache write tokens</label>
+              <Input
+                id="cache-write"
+                type="number"
+                inputMode="numeric"
+                value={inputs.cacheWriteTokens}
+                onChange={(event) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    cacheWriteTokens: toNumber(event.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="grid gap-1">
+              <label htmlFor="input-audio">Input audio tokens</label>
+              <Input
+                id="input-audio"
+                type="number"
+                inputMode="numeric"
+                value={inputs.inputAudioTokens}
+                onChange={(event) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    inputAudioTokens: toNumber(event.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="grid gap-1">
+              <label htmlFor="output-audio">Output audio tokens</label>
+              <Input
+                id="output-audio"
+                type="number"
+                inputMode="numeric"
+                value={inputs.outputAudioTokens}
+                onChange={(event) =>
+                  setInputs((prev) => ({
+                    ...prev,
+                    outputAudioTokens: toNumber(event.target.value),
+                  }))
+                }
+              />
+            </div>
+          </>
+        )}
       </div>
-
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={() => setShowAdvanced((prev) => !prev)}
-      >
-        {showAdvanced ? "Hide" : "Show"} advanced inputs
-      </Button>
-
-      {showAdvanced && (
-        <div className="grid gap-3 text-xs">
-          <div className="grid gap-1">
-            <label htmlFor="reasoning-tokens">Reasoning tokens</label>
-            <Input
-              id="reasoning-tokens"
-              type="number"
-              inputMode="numeric"
-              value={inputs.reasoningTokens}
-              onChange={(event) =>
-                setInputs((prev) => ({
-                  ...prev,
-                  reasoningTokens: toNumber(event.target.value),
-                }))
-              }
-            />
-          </div>
-          <div className="grid gap-1">
-            <label htmlFor="cache-read">Cache read tokens</label>
-            <Input
-              id="cache-read"
-              type="number"
-              inputMode="numeric"
-              value={inputs.cacheReadTokens}
-              onChange={(event) =>
-                setInputs((prev) => ({
-                  ...prev,
-                  cacheReadTokens: toNumber(event.target.value),
-                }))
-              }
-            />
-          </div>
-          <div className="grid gap-1">
-            <label htmlFor="cache-write">Cache write tokens</label>
-            <Input
-              id="cache-write"
-              type="number"
-              inputMode="numeric"
-              value={inputs.cacheWriteTokens}
-              onChange={(event) =>
-                setInputs((prev) => ({
-                  ...prev,
-                  cacheWriteTokens: toNumber(event.target.value),
-                }))
-              }
-            />
-          </div>
-          <div className="grid gap-1">
-            <label htmlFor="input-audio">Input audio tokens</label>
-            <Input
-              id="input-audio"
-              type="number"
-              inputMode="numeric"
-              value={inputs.inputAudioTokens}
-              onChange={(event) =>
-                setInputs((prev) => ({
-                  ...prev,
-                  inputAudioTokens: toNumber(event.target.value),
-                }))
-              }
-            />
-          </div>
-          <div className="grid gap-1">
-            <label htmlFor="output-audio">Output audio tokens</label>
-            <Input
-              id="output-audio"
-              type="number"
-              inputMode="numeric"
-              value={inputs.outputAudioTokens}
-              onChange={(event) =>
-                setInputs((prev) => ({
-                  ...prev,
-                  outputAudioTokens: toNumber(event.target.value),
-                }))
-              }
-            />
-          </div>
-        </div>
-      )}
 
       {estimate.missingRates.length > 0 && (
         <div className="text-muted-foreground text-xs">
