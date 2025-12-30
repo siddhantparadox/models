@@ -1,7 +1,19 @@
 import type { ModelSummary } from "@/lib/catalog"
 import { scoreSummary } from "@/lib/search/score"
 
-export type SortOption = "best" | "cheapest" | "context" | "updated"
+export const SORT_OPTIONS = [
+  "release",
+  "updated",
+  "context",
+  "output",
+  "cheapest",
+  "best",
+] as const
+
+export type SortOption = (typeof SORT_OPTIONS)[number]
+
+export const isSortOption = (value: string | null): value is SortOption =>
+  SORT_OPTIONS.includes(value as SortOption)
 
 const parseDate = (value: string | null) => {
   if (!value) return 0
@@ -26,6 +38,20 @@ export const sortSummaries = (
   const sorted = [...items]
 
   switch (sort) {
+    case "release":
+      sorted.sort((a, b) => {
+        const aDate = parseDate(a.releaseDate)
+        const bDate = parseDate(b.releaseDate)
+        return bDate - aDate
+      })
+      return sorted
+    case "updated":
+      sorted.sort((a, b) => {
+        const aDate = parseDate(a.lastUpdated) || parseDate(a.releaseDate)
+        const bDate = parseDate(b.lastUpdated) || parseDate(b.releaseDate)
+        return bDate - aDate
+      })
+      return sorted
     case "cheapest":
       sorted.sort((a, b) => estimatePrice(a) - estimatePrice(b))
       return sorted
@@ -34,12 +60,8 @@ export const sortSummaries = (
         (a, b) => (b.contextTokens ?? 0) - (a.contextTokens ?? 0)
       )
       return sorted
-    case "updated":
-      sorted.sort((a, b) => {
-        const aDate = parseDate(a.lastUpdated) || parseDate(a.releaseDate)
-        const bDate = parseDate(b.lastUpdated) || parseDate(b.releaseDate)
-        return bDate - aDate
-      })
+    case "output":
+      sorted.sort((a, b) => (b.outputTokens ?? 0) - (a.outputTokens ?? 0))
       return sorted
     case "best":
     default:

@@ -8,13 +8,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import type { SortOption } from "@/lib/search"
+import { SORT_OPTIONS, type SortOption } from "@/lib/search/sort"
 
 const SORT_LABELS: Record<SortOption, string> = {
-  best: "Best match",
-  cheapest: "Cheapest",
+  release: "Release date (newest)",
+  updated: "Last updated (newest)",
   context: "Largest context",
-  updated: "Recently updated",
+  output: "Largest output",
+  cheapest: "Cheapest",
+  best: "Best match",
 }
 
 type SortMenuProps = {
@@ -35,9 +37,9 @@ export function SortMenu({ value, onChange }: SortMenuProps) {
           value={value}
           onValueChange={(nextValue) => onChange(nextValue as SortOption)}
         >
-          {Object.entries(SORT_LABELS).map(([key, label]) => (
+          {SORT_OPTIONS.map((key) => (
             <DropdownMenuRadioItem key={key} value={key}>
-              {label}
+              {SORT_LABELS[key]}
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

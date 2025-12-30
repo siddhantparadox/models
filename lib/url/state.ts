@@ -1,4 +1,4 @@
-import type { SortOption } from "@/lib/search"
+import { isSortOption, type SortOption } from "@/lib/search/sort"
 
 export type UrlState = {
   q: string
@@ -20,7 +20,7 @@ export type UrlState = {
 }
 
 const DEFAULT_PAGE_SIZE = 25
-const DEFAULT_SORT: SortOption = "best"
+const DEFAULT_SORT: SortOption = "release"
 
 const parseNumber = (value: string | null) => {
   if (!value) return null
@@ -45,14 +45,7 @@ export const parseUrlState = (params: URLSearchParams): UrlState => {
     Math.max(1, parseNumber(params.get("pageSize")) ?? DEFAULT_PAGE_SIZE)
   )
   const sortParam = params.get("sort")
-  const sort = ([
-    "best",
-    "cheapest",
-    "context",
-    "updated",
-  ] as SortOption[]).includes(sortParam as SortOption)
-    ? (sortParam as SortOption)
-    : DEFAULT_SORT
+  const sort = isSortOption(sortParam) ? sortParam : DEFAULT_SORT
 
   return {
     q: params.get("q") ?? "",

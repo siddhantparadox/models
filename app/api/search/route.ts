@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { getCatalog } from "@/lib/catalog"
-import { searchSummaries, type SortOption } from "@/lib/search"
+import { isSortOption, searchSummaries, type SortOption } from "@/lib/search"
 
 const parseList = (value: string | null) =>
   value
@@ -28,7 +28,8 @@ export async function GET(request: Request) {
     Math.max(1, parseNumber(searchParams.get("pageSize")) ?? 25)
   )
 
-  const sort = (searchParams.get("sort") as SortOption) ?? "best"
+  const sortParam = searchParams.get("sort")
+  const sort: SortOption = isSortOption(sortParam) ? sortParam : "release"
 
   const filters = {
     query: searchParams.get("q")?.trim() ?? "",
