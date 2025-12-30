@@ -111,7 +111,9 @@ export function DetailsPanel({
           </AccordionItem>
 
           <AccordionItem value="export">
-            <AccordionTrigger>Export and share</AccordionTrigger>
+            <AccordionTrigger data-export-trigger="true">
+              Export and share
+            </AccordionTrigger>
             <AccordionContent>
               <ExportSection summary={summary} detail={detail} />
             </AccordionContent>

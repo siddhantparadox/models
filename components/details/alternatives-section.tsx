@@ -24,6 +24,8 @@ type AlternativesSectionProps = {
 
 export function AlternativesSection({ summary, open }: AlternativesSectionProps) {
   const [relaxed, setRelaxed] = React.useState(false)
+  const listRef = React.useRef<HTMLDivElement | null>(null)
+  const [maxHeight, setMaxHeight] = React.useState<number | null>(null)
 
   const url = React.useMemo(() => {
     if (!open) return null
@@ -55,6 +57,42 @@ export function AlternativesSection({ summary, open }: AlternativesSectionProps)
     url,
     apiFetcher
   )
+
+  const updateMaxHeight = React.useCallback(() => {
+    if (!listRef.current) return
+    const exportTrigger = document.querySelector(
+      "[data-export-trigger=\"true\"]"
+    )
+    if (!(exportTrigger instanceof HTMLElement)) return
+
+    const listRect = listRef.current.getBoundingClientRect()
+    const exportRect = exportTrigger.getBoundingClientRect()
+    const available = Math.max(160, exportRect.top - listRect.top - 8)
+    setMaxHeight(available)
+  }, [])
+
+  React.useLayoutEffect(() => {
+    if (!open) return
+    updateMaxHeight()
+
+    const handleResize = () => updateMaxHeight()
+    window.addEventListener("resize", handleResize)
+
+    let observer: ResizeObserver | null = null
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(handleResize)
+      if (listRef.current) observer.observe(listRef.current)
+      const exportTrigger = document.querySelector(
+        "[data-export-trigger=\"true\"]"
+      )
+      if (exportTrigger instanceof HTMLElement) observer.observe(exportTrigger)
+    }
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+      observer?.disconnect()
+    }
+  }, [open, updateMaxHeight, data?.items?.length])
 
   if (!open) return null
 
@@ -96,7 +134,12 @@ export function AlternativesSection({ summary, open }: AlternativesSectionProps)
         />
       )}
 
-      <div className="flex flex-col gap-2">
+      <div
+        ref={listRef}
+        data-alternatives-list="true"
+        className="flex flex-col gap-2 overflow-y-auto pr-1"
+        style={maxHeight ? { maxHeight } : undefined}
+      >
         {data?.items?.map((item) => (
           <div key={item.id} className="border-border border p-3 text-xs">
             <div className="flex items-center justify-between">

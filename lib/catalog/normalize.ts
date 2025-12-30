@@ -65,7 +65,10 @@ const normalizeModel = (
   model: RawModel
 ) => {
   const modelId = toString(model.id) ?? modelKey
-  const fullId = modelId.includes("/") ? modelId : `${providerId}/${modelId}`
+  const trimmedId = modelId.replace(/^\/+|\/+$/g, "")
+  const fullId = trimmedId.startsWith(`${providerId}/`)
+    ? trimmedId
+    : `${providerId}/${trimmedId}`
   const name = toString(model.name) ?? modelId
   const modalitiesIn = normalizeStringArray(model.modalities?.input)
   const modalitiesOut = normalizeStringArray(model.modalities?.output)

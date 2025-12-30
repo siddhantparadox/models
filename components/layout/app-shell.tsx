@@ -194,7 +194,7 @@ export function AppShell({ meta }: AppShellProps) {
           </section>
 
           <aside className="hidden min-h-0 lg:flex lg:flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+            <div className="min-h-0 flex-1 overflow-hidden pr-1">
               <DetailsPanel
                 summary={selectedSummary}
                 detail={detailData?.detail ?? null}
