@@ -34,5 +34,5 @@
 - Add a `test` script to `package.json` and document how to run it.
 
 ## Commit & Pull Request Guidelines
-- Git history shows no strict convention; use short, imperative summaries (e.g., “Add filters panel”).
+- Git history shows no strict convention; use short, imperative summaries (e.g., "Add filters panel").
 - PRs should include a brief description, verification steps, and screenshots for UI changes; link issues and call out new deps/config.
