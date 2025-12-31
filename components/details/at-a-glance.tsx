@@ -45,6 +45,10 @@ export function AtAGlance({ summary }: AtAGlanceProps) {
         {summary.structuredOutput && (
           <Badge variant="secondary">Structured output</Badge>
         )}
+        {summary.temperature && (
+          <Badge variant="secondary">Temperature control</Badge>
+        )}
+        {summary.reasoning && <Badge variant="secondary">Reasoning</Badge>}
         {summary.openWeights && <Badge variant="secondary">Open weights</Badge>}
       </div>
 

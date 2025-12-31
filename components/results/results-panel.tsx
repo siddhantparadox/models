@@ -64,13 +64,16 @@ export function ResultsPanel({
 
       <div className="hidden lg:block">
         <div className="border-border overflow-x-auto border">
-          <div className="bg-muted text-muted-foreground grid min-w-[900px] grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.2fr)_90px_70px_90px_120px] gap-2 px-4 py-2 text-[11px]">
+          <div className="bg-muted text-muted-foreground grid min-w-[1200px] grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.2fr)_90px_90px_90px_90px_90px_90px_120px] gap-2 px-4 py-2 text-[11px]">
             <div>Model</div>
             <div>Provider</div>
             <div>Modalities</div>
             <div>Context</div>
-            <div>Tool call</div>
+            <div>Tool calling</div>
+            <div>Structured output</div>
+            <div>Temperature</div>
             <div>Open weights</div>
+            <div>Reasoning</div>
             <div>Price</div>
           </div>
           <div className="divide-y">
@@ -78,12 +81,15 @@ export function ResultsPanel({
               ? Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={index}
-                    className="grid min-w-[900px] grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.2fr)_90px_70px_90px_120px] gap-2 px-4 py-3"
+                    className="grid min-w-[1200px] grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.2fr)_90px_90px_90px_90px_90px_90px_120px] gap-2 px-4 py-3"
                   >
                     <Skeleton className="h-3 w-40" />
                     <Skeleton className="h-3 w-24" />
                     <Skeleton className="h-3 w-28" />
                     <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-3 w-12" />
+                    <Skeleton className="h-3 w-12" />
+                    <Skeleton className="h-3 w-12" />
                     <Skeleton className="h-3 w-12" />
                     <Skeleton className="h-3 w-12" />
                     <Skeleton className="h-3 w-20" />
@@ -94,7 +100,7 @@ export function ResultsPanel({
                     key={item.id}
                     type="button"
                     onClick={() => onSelect(item.id)}
-                    className={`grid min-w-[900px] w-full grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.2fr)_90px_70px_90px_120px] gap-2 px-4 py-3 text-left text-xs transition-colors ${
+                    className={`grid min-w-[1200px] w-full grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1.2fr)_90px_90px_90px_90px_90px_90px_120px] gap-2 px-4 py-3 text-left text-xs transition-colors ${
                       selectedId === item.id
                         ? "bg-muted"
                         : "hover:bg-muted/60"
@@ -148,7 +154,28 @@ export function ResultsPanel({
                       )}
                     </div>
                     <div className="flex items-center gap-1">
+                      {item.structuredOutput ? (
+                        <CheckIcon className="size-4" />
+                      ) : (
+                        <XIcon className="size-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {item.temperature ? (
+                        <CheckIcon className="size-4" />
+                      ) : (
+                        <XIcon className="size-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
                       {item.openWeights ? (
+                        <CheckIcon className="size-4" />
+                      ) : (
+                        <XIcon className="size-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {item.reasoning ? (
                         <CheckIcon className="size-4" />
                       ) : (
                         <XIcon className="size-4 text-muted-foreground" />
