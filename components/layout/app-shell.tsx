@@ -3,6 +3,7 @@
 import * as React from "react"
 import useSWR from "swr"
 import { useRouter, useSearchParams } from "next/navigation"
+import Image from "next/image"
 
 import type { CatalogMeta } from "@/lib/catalog/types"
 import type { ModelResponse, SearchResponse } from "@/lib/api/types"
@@ -120,11 +121,34 @@ export function AppShell({ meta }: AppShellProps) {
     }
   }
 
+  const handleLogoClick = () => {
+    setFiltersOpen(false)
+    setQueryInput("")
+    startTransition(() => {
+      router.push("/", { scroll: false })
+    })
+  }
+
   return (
     <div className="bg-background flex min-h-screen flex-col">
       <header className="border-b">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center">
           <div className="flex flex-1 items-center gap-3">
+            <button
+              type="button"
+              aria-label="Reset filters and go home"
+              onClick={handleLogoClick}
+              className="focus-visible:ring-ring/50 rounded-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <Image
+                src="/logo.png"
+                alt="Models"
+                width={36}
+                height={36}
+                className="size-9 shrink-0"
+                priority
+              />
+            </button>
             <div className="min-w-[240px] flex-1">
               <SearchCommand
                 value={queryInput}
