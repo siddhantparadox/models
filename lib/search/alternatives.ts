@@ -443,7 +443,7 @@ const scoreAlternative = (
     scoreCapabilityFeature(base[feature.key], candidate[feature.key])
   )
   const capabilityScore =
-    capabilityScores.reduce((sum, value) => sum + value, 0) /
+    capabilityScores.reduce<number>((sum, value) => sum + value, 0) /
     CAPABILITY_FEATURES.length
 
   const deprecated = candidate.status?.toLowerCase() === "deprecated"
