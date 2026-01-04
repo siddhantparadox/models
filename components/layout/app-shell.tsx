@@ -138,6 +138,7 @@ export function AppShell({ meta }: AppShellProps) {
               type="button"
               aria-label="Reset filters and go home"
               onClick={handleLogoClick}
+              title="A snarky little wrapper around models.dev that pretends to be humble while it actually filters, ranks, and serves up open-weights alternatives with flair."
               className="focus-visible:ring-ring/50 rounded-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
             >
               <Image
