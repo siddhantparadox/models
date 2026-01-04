@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/common/empty-state"
+import { TooltipInfo } from "@/components/common/tooltip-info"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 const formatNumber = (value: number | null) =>
   value === null ? "N/A" : value.toLocaleString()
@@ -23,37 +25,72 @@ type AlternativesSectionProps = {
 }
 
 export function AlternativesSection({ summary, open }: AlternativesSectionProps) {
-  const [relaxed, setRelaxed] = React.useState(false)
+  const [hasRequested, setHasRequested] = React.useState(false)
   const listRef = React.useRef<HTMLDivElement | null>(null)
   const [maxHeight, setMaxHeight] = React.useState<number | null>(null)
+  const scoreDescription = (
+    <div className="space-y-1">
+      <div>
+        Nearest-match score across open weights models (top 10 results).
+      </div>
+      <div>
+        Weights: modalities 20, context 25, output 15, capability 20, price 10,
+        recency 10.
+      </div>
+      <div>
+        Only open weights models are considered.
+      </div>
+      <div>
+        Modalities are scored for input and output match against the base.
+      </div>
+      <div>
+        Capability compares tool calling, structured output, reasoning, and
+        temperature control.
+      </div>
+      <div>
+        Context/output use closeness to the base model. Price compares total
+        input + output cost.
+      </div>
+      <div>
+        Recency uses last updated, release date, or knowledge cutoff.
+      </div>
+      <div>
+        Missing fields are neutral, except missing price when base pricing
+        exists.
+      </div>
+      <div>
+        Deprecated models are penalized by 20 points.
+      </div>
+    </div>
+  )
+  const actionTooltip = {
+    title: hasRequested ? "Refresh alternatives" : "Find open weights alternatives",
+    description: (
+      <div className="space-y-1">
+        <div>
+          Finds the nearest open weights models using similarity scoring.
+        </div>
+        <div>
+          Modalities, capacity, capabilities, price, and recency all factor in.
+        </div>
+      </div>
+    ),
+  }
+
+  React.useEffect(() => {
+    setHasRequested(false)
+  }, [summary.id])
 
   const url = React.useMemo(() => {
-    if (!open) return null
+    if (!open || !hasRequested) return null
     const params = new URLSearchParams()
     params.set("id", summary.id)
-    params.set("limit", "6")
-
-    if (relaxed) {
-      if (summary.contextTokens) {
-        params.set(
-          "minContext",
-          String(Math.floor(summary.contextTokens * 0.5))
-        )
-      }
-      if (summary.outputTokens) {
-        params.set(
-          "minOutput",
-          String(Math.floor(summary.outputTokens * 0.5))
-        )
-      }
-      params.set("requireToolCall", "false")
-      params.set("requireStructuredOutput", "false")
-    }
+    params.set("limit", "10")
 
     return `/api/alternatives?${params.toString()}`
-  }, [open, relaxed, summary])
+  }, [open, hasRequested, summary.id])
 
-  const { data, error, isLoading } = useSWR<AlternativesResponse>(
+  const { data, error, isLoading, mutate } = useSWR<AlternativesResponse>(
     url,
     apiFetcher
   )
@@ -99,18 +136,47 @@ export function AlternativesSection({ summary, open }: AlternativesSectionProps)
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <div className="text-muted-foreground text-xs">
-          Open weights alternatives load on demand.
+        <div className="text-muted-foreground flex items-center gap-2 text-xs">
+          <span>Click to calculate open weights alternatives.</span>
+          <TooltipInfo
+            label="Score calculation"
+            description={scoreDescription}
+            variant="hover"
+          />
         </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => setRelaxed((prev) => !prev)}
-        >
-          {relaxed ? "Reset" : "Relax constraints"}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={isLoading}
+              onClick={() => {
+                if (!hasRequested) {
+                  setHasRequested(true)
+                  return
+                }
+                void mutate()
+              }}
+            >
+              {hasRequested ? "Refresh alternatives" : "Find open weights alternatives"}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="text-xs/relaxed max-w-[240px]">
+            <div className="font-medium">{actionTooltip.title}</div>
+            <div className="text-muted-foreground mt-1">
+              {actionTooltip.description}
+            </div>
+          </TooltipContent>
+        </Tooltip>
       </div>
+
+      {!hasRequested && (
+        <EmptyState
+          title="Calculate alternatives"
+          description={"Click \"Find open weights alternatives\" to compute the nearest matches."}
+        />
+      )}
 
       {isLoading && (
         <div className="flex flex-col gap-2">
@@ -127,10 +193,10 @@ export function AlternativesSection({ summary, open }: AlternativesSectionProps)
         />
       )}
 
-      {!isLoading && !error && data?.items?.length === 0 && (
+      {hasRequested && !isLoading && !error && data?.items?.length === 0 && (
         <EmptyState
           title="No alternatives found"
-          description="Try relaxing constraints to widen the search."
+          description="Try refreshing to re-run the search."
         />
       )}
 

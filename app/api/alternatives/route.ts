@@ -9,21 +9,11 @@ const alternativesCache = new Map<
   { expiresAt: number; payload: unknown }
 >()
 
-const parseList = (value: string | null) =>
-  value
-    ? value
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : []
-
 const parseNumber = (value: string | null) => {
   if (!value) return null
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : null
 }
-
-const parseBoolean = (value: string | null) => value === "true"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -53,52 +43,13 @@ export async function GET(request: Request) {
     )
   }
 
-  const requiredModalitiesInParam = parseList(
-    searchParams.get("requiredModalitiesIn")
-  )
-  const requiredModalitiesOutParam = parseList(
-    searchParams.get("requiredModalitiesOut")
-  )
-  const requiredModalitiesIn = requiredModalitiesInParam.length
-    ? requiredModalitiesInParam
-    : base.modalitiesIn
-  const requiredModalitiesOut = requiredModalitiesOutParam.length
-    ? requiredModalitiesOutParam
-    : base.modalitiesOut
-
-  const minContext =
-    parseNumber(searchParams.get("minContext")) ??
-    (base.contextTokens ? Math.floor(base.contextTokens * 0.8) : null)
-  const minOutput =
-    parseNumber(searchParams.get("minOutput")) ??
-    (base.outputTokens ? Math.floor(base.outputTokens * 0.8) : null)
-
-  const requireToolCallParam = searchParams.get("requireToolCall")
-  const requireStructuredOutputParam = searchParams.get(
-    "requireStructuredOutput"
-  )
-  const requireToolCall =
-    requireToolCallParam === null
-      ? base.toolCall === true
-      : parseBoolean(requireToolCallParam)
-  const requireStructuredOutput =
-    requireStructuredOutputParam === null
-      ? base.structuredOutput === true
-      : parseBoolean(requireStructuredOutputParam)
-
   const limit = Math.min(
-    20,
-    Math.max(1, parseNumber(searchParams.get("limit")) ?? 6)
+    10,
+    Math.max(1, parseNumber(searchParams.get("limit")) ?? 10)
   )
 
   const items = findAlternatives(catalog.summaries, {
     base,
-    requiredModalitiesIn,
-    requiredModalitiesOut,
-    minContext,
-    minOutput,
-    requireToolCall,
-    requireStructuredOutput,
     limit,
   })
 

@@ -331,13 +331,7 @@ Open weights alternatives for one model.
 Query params
 
 * id
-* minContext
-* minOutput
-* requireToolCall
-* requireStructuredOutput
-* requiredModalitiesIn
-* requiredModalitiesOut
-* limit
+* limit (max 10)
 
 Response
 
@@ -356,7 +350,7 @@ Response
 ```
 
 Important
-Do not compute alternatives for every model on every search. Compute on demand when the user opens that section in the details panel. Cache it in memory with a TTL.
+Do not compute alternatives for every model on every search. Compute on demand when the user clicks the button in the details panel. Cache it in memory with a TTL.
 
 ### GET /api/warm
 
@@ -437,17 +431,15 @@ No extra server calls needed.
 
 This feature needs server help since the client does not have the full catalog.
 
-Default constraints when a model is selected
+Default behavior when a model is selected
 
-* Require the same input and output modalities
-* Min context is 80 percent of the selected model context
-* Min output is 80 percent of the selected model output
-* Require tool calling only if the base model supports it
-* Require structured output only if the base model supports it
+* User clicks "Find open weights alternatives"
+* Server returns the nearest open weights models using weighted similarity
+* Modalities and capabilities are soft signals, not hard filters
 * Open weights must be true
 
 UI rule
-Load alternatives only when the user opens the section. Show skeleton first.
+Load alternatives only when the user clicks the button. Show skeleton first.
 
 Explainability
 
@@ -802,7 +794,7 @@ E2E tests with Playwright
 
 * Search, filter, select a model
 * Cost estimate updates
-* Open weights alternatives load on section open
+* Open weights alternatives load on button click
 * Copy actions work
 
 ## Deployment
@@ -916,7 +908,7 @@ Success check
 Deliverables
 
 * Add `/api/alternatives`
-* Load alternatives only when section opens
+* Load alternatives only on button click
 * Add score and reason chips
 
 Success check
