@@ -1,44 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Models Explorer
 
-## Getting Started
+A snarky little wrapper around models.dev that pretends to be humble while it actually filters, ranks, and serves up open-weights alternatives with flair.
 
-First, run the development server:
+## Overview
+
+Models Explorer is a Next.js app for finding AI models, estimating token cost, and comparing open-weights alternatives. It uses the models.dev catalog as the single source of truth and does not store user data.
+
+## Data sources
+
+- Catalog: https://models.dev/api.json
+- Provider logos: https://models.dev/logos/{provider}.svg
+- Cache: server fetch revalidates daily; alternatives are computed on demand and cached in memory with a TTL.
+
+## Requirements
+
+- Bun
+
+## Quickstart
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Testing
-
-Run the test suite with:
+## Scripts
 
 ```bash
+bun dev
+bun run build
+bun run start
+bun run lint
 bun run test
 ```
 
-## Learn More
+## API endpoints
 
-To learn more about Next.js, take a look at the following resources:
+- `GET /api/search`
+  - Query params: `q`, `providers`, `modalitiesIn`, `modalitiesOut`, `toolCall`, `structuredOutput`, `temperature`, `openWeights`, `reasoning`, `minContext`, `minOutput`, `maxPriceIn`, `maxPriceOut`, `hideDeprecated`, `sort`, `page`, `pageSize`
+  - Returns: paged `ModelSummary` list
+- `GET /api/model`
+  - Query params: `id`
+  - Returns: `ModelSummary` + `ModelDetail`
+- `GET /api/alternatives`
+  - Query params: `id`, `limit` (max 10)
+  - Returns: nearest open-weights alternatives with score and reasons
+- `GET /api/warm` (optional)
+  - Protected by `WARM_SECRET`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Open-weights alternatives
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Alternatives are computed on button click and rank all open-weights models using weighted similarity:
+- Modalities match: 20
+- Context closeness: 25
+- Output closeness: 15
+- Capability parity (tool calling, structured output, reasoning, temperature): 20
+- Price competitiveness: 10
+- Recency: 10
+- Deprecated penalty: -20
 
-## Deploy on Vercel
+Missing fields are neutral except missing price when base pricing exists.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `WARM_SECRET` (optional): secures `/api/warm`
+- `NEXT_PUBLIC_APP_URL` (optional): used for absolute share links
+
+## Links
+
+- models.dev: https://models.dev
+- models.dev repo: https://github.com/anomalyco/models.dev
+- This project: https://github.com/siddhantparadox/models

@@ -232,6 +232,42 @@ export function AppShell({ meta }: AppShellProps) {
         </div>
       </main>
 
+      <footer className="border-t">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-4 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
+          <div>
+            A snarky little wrapper around models.dev that pretends to be humble
+            while it actually filters, ranks, and serves up open-weights
+            alternatives with flair.
+          </div>
+          <div className="flex flex-wrap gap-x-3 gap-y-1">
+            <a
+              href="https://models.dev"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground"
+            >
+              models.dev
+            </a>
+            <a
+              href="https://github.com/anomalyco/models.dev"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground"
+            >
+              Original repo
+            </a>
+            <a
+              href="https://github.com/siddhantparadox/models"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-foreground"
+            >
+              This project
+            </a>
+          </div>
+        </div>
+      </footer>
+
       <Sheet
         open={isMobile && filtersOpen}
         onOpenChange={handleFiltersOpenChange}
