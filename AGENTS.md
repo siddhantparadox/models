@@ -31,6 +31,7 @@
 
 ## Testing Guidelines
 - No framework yet; when added, follow the plan in `designDoc.md` (unit: normalization/filter/sort/score/cost; integration: API routes; E2E: core flows).
+- Run `bun run lint` and `bun run build` after every change.
 - Add a `test` script to `package.json` and document how to run it.
 
 ## Commit & Pull Request Guidelines
