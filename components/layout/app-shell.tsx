@@ -133,13 +133,13 @@ export function AppShell({ meta }: AppShellProps) {
     <div className="bg-background flex min-h-screen flex-col">
       <header className="border-b">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center">
-          <div className="flex flex-1 items-center gap-3">
+          <div className="flex flex-1 flex-wrap items-center gap-3">
             <button
               type="button"
               aria-label="Reset filters and go home"
               onClick={handleLogoClick}
               title="A snarky little wrapper around models.dev that pretends to be humble while it actually filters, ranks, and serves up open-weights alternatives with flair."
-              className="focus-visible:ring-ring/50 rounded-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none"
+              className="focus-visible:ring-ring/50 rounded-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:outline-none shrink-0"
             >
               <Image
                 src="/logo.png"
@@ -150,7 +150,7 @@ export function AppShell({ meta }: AppShellProps) {
                 priority
               />
             </button>
-            <div className="min-w-[240px] flex-1">
+            <div className="min-w-0 flex-1 basis-[240px]">
               <SearchCommand
                 value={queryInput}
                 onValueChange={setQueryInput}
@@ -162,12 +162,14 @@ export function AppShell({ meta }: AppShellProps) {
                 isLoading={searchLoading}
               />
             </div>
-            <SortMenu
-              value={state.sort}
-              onChange={(value) =>
-                updateState({ sort: value }, { replace: true, resetPage: true })
-              }
-            />
+            <div className="w-full sm:w-auto">
+              <SortMenu
+                value={state.sort}
+                onChange={(value) =>
+                  updateState({ sort: value }, { replace: true, resetPage: true })
+                }
+              />
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button

@@ -28,7 +28,7 @@ export function SortMenu({ value, onChange }: SortMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
           Sort: {SORT_LABELS[value]}
         </Button>
       </DropdownMenuTrigger>
